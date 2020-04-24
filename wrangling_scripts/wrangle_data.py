@@ -25,10 +25,9 @@ def prepare_data(weekdays_only = False):
                       for tup in list(agg_df.columns)]
     return agg_df, authority_dict
 
-agg_df, authority_dict = prepare_data()
 
 
-def return_figures():
+def return_figure(species):
     """Creates four plotly visualizations
 
     Args:
@@ -39,35 +38,36 @@ def return_figures():
 
     """
 
-    # first chart plots arable land from 1990 to 2015 in top 10 economies 
-    # as a line chart
     
-    df, authority_dict = prepare_data()
+    df, authority_dict = prepare_data(weekdays_only=True)
     
+    col = species + '_median'
     
     fig = go.Figure()
-    authority_ls = pd.Series(df.authority_id.unique())
+    
+    authorities_full = df.isnull().groupby(
+        df['authority_id'])[col].sum() < df.date.nunique()-10
+    
+    authority_ls = pd.Series(authorities_full.index[authorities_full])
+
     fig.add_trace(
         go.Scatter(
             x = df.date,
-            y = df[df.authority_id == authority_ls[0]]['NO2_median'],
+            y = df[df.authority_id == authority_ls[0]][col].rolling(3,
+                                                                    center=True).mean(),
             name = authority_dict[authority_ls[0]],
             visible=True))
 
+
     for authority_id in authority_ls[1:]:
-        fig.add_trace(
+         fig.add_trace(
             go.Scatter(
                 x = df.date,
-                y = df[df.authority_id == authority_id]['NO2_median'],
+                y = df[df.authority_id == authority_id][col].rolling(3,
+                                                                     center=True).mean(),
                 name = authority_dict[authority_id],
                 visible=False
             ))
-
-    # button_all = dict(label = 'All',
-    #                   method = 'update',
-    #                   args = [{'visible': df.columns.isin(df.columns),
-    #                            'title': 'All',
-    #                            'showlegend':True}])
 
     def create_layout_button(authority_id):
         return dict(label = authority_dict[authority_id],
@@ -77,6 +77,14 @@ def return_figures():
                              'showlegend': True}])
 
     fig.update_layout(
+        xaxis = dict(
+            title_text = "Date",
+            title_font = {"size": 20},
+            title_standoff = 25),
+        yaxis = dict(
+            title_text = species + ' Levels',
+            title_standoff = 25),
+        title_text=species + " Pollution Rates in London Districts",
         height=400, width = 1000,
         updatemenus=[go.layout.Updatemenu(
             active = 0,
@@ -84,79 +92,12 @@ def return_figures():
                 lambda auth: create_layout_button(auth)))
             )
         ])
+    return fig
+
+
+# def return_figure():
+#     species_ls = ['NO2','O3','PM10','PM25']
+#     figures = [return_figure(species) for species in species_ls]
     
-    # graph_one = []    
-    # graph_one.append(
-    #   go.Scatter(
-    #   x = df['date'],
-    #   y = df['NO2_median'],
-    #   mode = 'lines'
-    #   )
-    # )
 
-    # layout_one = dict(title = 'NO2',
-    #             xaxis = dict(title = 'Date'),
-    #             yaxis = dict(title = 'NO2'),
-    #             updatemenus = [
-    #                 dict(
-    #                     buttons=list([
-    #                         dict(
-    #                             args=[])]))]
-    #             )
-
-
-# second chart plots ararble land for 2015 as a bar chart    
-#     graph_two = []
-
-#     graph_two.append(
-#       go.Bar(
-#       x = ['a', 'b', 'c', 'd', 'e'],
-#       y = [12, 9, 7, 5, 1],
-#       )
-#     )
-
-#     layout_two = dict(title = 'Chart Two',
-#                 xaxis = dict(title = 'x-axis label',),
-#                 yaxis = dict(title = 'y-axis label'),
-#                 )
-
-
-# # third chart plots percent of population that is rural from 1990 to 2015
-#     graph_three = []
-#     graph_three.append(
-#       go.Scatter(
-#       x = [5, 4, 3, 2, 1, 0],
-#       y = [0, 2, 4, 6, 8, 10],
-#       mode = 'lines'
-#       )
-#     )
-
-#     layout_three = dict(title = 'Chart Three',
-#                 xaxis = dict(title = 'x-axis label'),
-#                 yaxis = dict(title = 'y-axis label')
-#                        )
-    
-# # fourth chart shows rural population vs arable land
-#     graph_four = []
-    
-#     graph_four.append(
-#       go.Scatter(
-#       x = [20, 40, 60, 80],
-#       y = [10, 20, 30, 40],
-#       mode = 'markers'
-#       )
-#     )
-
-#     layout_four = dict(title = 'Chart Four',
-#                 xaxis = dict(title = 'x-axis label'),
-#                 yaxis = dict(title = 'y-axis label'),
-#                 )
-    
-    # append all charts to the figures list
-    figures = []
-    figures.append(fig)
-    # figures.append(dict(data=graph_two, layout=layout_two))
-    # figures.append(dict(data=graph_three, layout=layout_three))
-    # figures.append(dict(data=graph_four, layout=layout_four))
-
-    return figures
+    # return figures
