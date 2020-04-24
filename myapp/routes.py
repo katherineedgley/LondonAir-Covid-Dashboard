@@ -1,16 +1,16 @@
 from myapp import app
 import json, plotly
 from flask import render_template
-from wrangling_scripts.wrangle_data import return_figure
+from wrangling_scripts.wrangle_data import return_figures
 
 @app.route('/')
 @app.route('/index')
+@app.route('/NO2')
 def index():
 
-    figures = [return_figure('NO2')]
-    ids = ['figure-0']
+    figures = return_figures('NO2')
     # plot ids for the html id tag
-    #ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
+    ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
 
     # Convert the plotly figures to JSON for javascript in html template
     figuresJSON = json.dumps(figures, cls=plotly.utils.PlotlyJSONEncoder)
@@ -20,8 +20,8 @@ def index():
                            figuresJSON=figuresJSON)
 @app.route('/O3')
 def O3():
-    figures = [return_figure('O3')]
-    ids = ['figure-1']
+    figures = return_figures('O3')
+    ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
 
     # Convert the plotly figures to JSON for javascript in html template
     figuresJSON = json.dumps(figures, cls=plotly.utils.PlotlyJSONEncoder)
@@ -32,8 +32,8 @@ def O3():
 
 @app.route('/PM10')
 def PM10():
-    figures = [return_figure('PM10')]
-    ids = ['figure-2']
+    figures = return_figures('PM10')
+    ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
 
     # Convert the plotly figures to JSON for javascript in html template
     figuresJSON = json.dumps(figures, cls=plotly.utils.PlotlyJSONEncoder)
@@ -44,8 +44,8 @@ def PM10():
 
 @app.route('/PM25')
 def PM25():
-    figures = [return_figure('PM25')]
-    ids = ['figure-2']
+    figures = return_figures('PM25')
+    ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
 
     # Convert the plotly figures to JSON for javascript in html template
     figuresJSON = json.dumps(figures, cls=plotly.utils.PlotlyJSONEncoder)
