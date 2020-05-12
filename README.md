@@ -1,13 +1,14 @@
 # LondonAir-Covid-Dashboard
 Dashboard investigating air pollution in London around Covid lockdown deployed using Flask
 
+![Sample Image of Dashboard](images/sample.png)
+
 ## Table of Contents
 [1. Installation and Data](#installation-and-data) \
 [2. Project Motivation](#project-motivation) \
 [3. File Descriptions](#file-descriptions) \
 [4. Results](#results) \
 [5. Licensing, Authors, and Acknowledgements](#licensing) 
-
 
 ## Dashboard access and data
 To run the code deploying the dashboard on a local machine, requires Python versions 3.\*. Requirements are listed in the `requirements.txt` file. 
